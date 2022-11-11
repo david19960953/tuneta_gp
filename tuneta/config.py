@@ -1,6 +1,9 @@
 # Series data
 tune_series = ["open", "high", "low", "close", "volume"]
 
+# testing
+test = ['???']
+
 # Parameters to tune
 tune_params = [
     "acceleration",
