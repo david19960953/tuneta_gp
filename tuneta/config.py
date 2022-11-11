@@ -4,6 +4,8 @@ tune_series = ["open", "high", "low", "close", "volume"]
 # testing
 test = ['???']
 
+test2 = ['XXXX']
+
 # Parameters to tune
 tune_params = [
     "acceleration",
