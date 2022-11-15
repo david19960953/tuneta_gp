@@ -82,7 +82,41 @@ class trans_multi():
         self.X = X
         self.allFuncDict = allFuncDict
 
+    def transform(self, columns=None ):
+        """
+        主程序
+        Given X, create features of fitted studies
+        :param X: Dataset with features used to create fitted studies
+        :return:
+        """
+        # Remove trailing identifier in column list if present
+        if columns is not None:
+            columns = [re.sub(r"_[0-9]+$", "", s) for s in columns]
 
+        self.X.columns = self.X.columns.str.lower()  # columns must be lower case
+        # pool = ProcessPool(nodes=n_jobs)  # Number of jobs
+        result = []
+
+        # Iterate fitted studies and calculate TA with fitted parameter set
+        self.time_df = pd.DataFrame()
+        for function_ in self.allFuncDict.values():
+            # Create field if no columns or is in columns list
+            if columns is None or ind.res_y.name in columns:
+               start = time.time()
+               res = self.main( function_, )
+               result.append(res)
+               end = time.time()
+               self.time_df.loc[function_['name'], 'time'] =  end - start
+               # print(function_['name'], "執行時間為 %f 秒" % (end - start))
+        # Blocking wait for asynchronous results
+        # result = [res.get() for res in result]
+
+        # Combine results into dataframe to return
+        res = pd.concat(result, axis=1)
+        res = pd.concat([res,self.X.close], axis=1)        
+        return res
+    
+    
     def main(self,function_):
         res = self._trial( function_['best_trial'],  function_['function'] )
         return res
@@ -114,6 +148,7 @@ class trans_multi():
             res.columns = [f"{name}_{i}" for i in range(len(res.columns))]
         else:
             res.columns = [f"{name}"]
+        
         return res
 
 
@@ -180,37 +215,7 @@ class trans_multi():
 
 
 
-    def transform(self, columns=None ):
-        """
-        Given X, create features of fitted studies
-        :param X: Dataset with features used to create fitted studies
-        :return:
-        """
-        # Remove trailing identifier in column list if present
-        if columns is not None:
-            columns = [re.sub(r"_[0-9]+$", "", s) for s in columns]
 
-        self.X.columns = self.X.columns.str.lower()  # columns must be lower case
-        # pool = ProcessPool(nodes=n_jobs)  # Number of jobs
-        result = []
-
-        # Iterate fitted studies and calculate TA with fitted parameter set
-        self.time_df = pd.DataFrame()
-        for function_ in self.allFuncDict.values():
-            # Create field if no columns or is in columns list
-            if columns is None or ind.res_y.name in columns:
-               start = time.time()
-               res = self.main( function_, )
-               result.append(res)
-               end = time.time()
-               self.time_df.loc[function_['name'], 'time'] =  end - start
-               # print(function_['name'], "執行時間為 %f 秒" % (end - start))
-        # Blocking wait for asynchronous results
-        # result = [res.get() for res in result]
-
-        # Combine results into dataframe to return
-        res = pd.concat(result, axis=1)
-        return res
 
 
 
@@ -585,7 +590,9 @@ def first_select(see):
 
 
 
-
+# for col in col_ll :
+#     if key == 'pta_'+col.split('_')[1]:
+#         print(key)
 
 
 
@@ -594,7 +601,9 @@ def second_select(see,ta_type_dict):
     seec =see.iloc[:].copy()
     seec = seec.fillna(method = 'pad', axis = 0)
     seec = seec.dropna()
-    col_ll = seec.columns[5:]
+    close = seec['close']
+    seec = seec.drop(columns = 'close')
+    col_ll = seec.columns
     
     for key in ta_type_dict.keys():
         if key == 'pta_squeeze':  #他比較特別又有子集bb 跟pro_bb
@@ -607,31 +616,41 @@ def second_select(see,ta_type_dict):
             
             for col in key_ll_bb:
                 idd  = col[-1]
-                if value_bb.loc[idd, 'type'] == 'tsma' or value_bb.loc[idd, 'type'] == 'ts':
-                    seec[col] = seec[col].pct_change()            
-                    
+                if value_bb.loc[idd, 'type'] == 'tsma' :
+                    seec[col] = seec[col].pct_change()     
+                elif value_bb.loc[idd, 'type'] == 'ts':
+                    seec[col] = seec[col]/close
+                     
             for col in key_ll_pro:
                 idd  = col[-1]
-                if value_pro.loc[idd, 'type'] == 'tsma' or value_pro.loc[idd, 'type'] == 'ts':
+                if value_pro.loc[idd, 'type'] == 'tsma':
                     seec[col] = seec[col].pct_change()   
+                elif value_pro.loc[idd, 'type'] == 'ts':
+                    seec[col] = seec[col]/close
+                    
             continue
         
         key_ll = [col for col in col_ll if key == 'pta_'+col.split('_')[1]]
         if len(key_ll) ==0:continue
         # print(key)
-        if len(key_ll) ==1:
+        if len(key_ll) ==1: #如果只有一種
             value = ta_type_dict[key]
             col = key_ll[0]
-            if value['type'].values[0] == 'tsma' or value['type'].values[0] == 'ts':
+            if value['type'].values[0] == 'tsma' :
                 seec[col] = seec[col].pct_change()
+                continue
+            elif value['type'].values[0] == 'ts':
+                seec[col] = seec[col]/close
                 continue
             else:continue
             
-        value = ta_type_dict[key]        
-        for col in key_ll:
+        value = ta_type_dict[key]         
+        for col in key_ll: #如果有多種
             idd  = col[-1]
-            if value.loc[idd, 'type'] == 'tsma' or value.loc[idd, 'type'] == 'ts':
-                seec[col] = seec[col].pct_change()              
+            if value.loc[idd, 'type'] == 'tsma':
+                seec[col] = seec[col].pct_change()           
+            elif value.loc[idd, 'type'] == 'ts':
+                seec[col] = seec[col]/close
     return seec
 
 # aaa = seec[key_ll]
