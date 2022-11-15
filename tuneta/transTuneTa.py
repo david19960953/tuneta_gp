@@ -617,13 +617,15 @@ def second_select(see,ta_type_dict):
             for col in key_ll_bb:
                 idd  = col[-1]
                 if value_bb.loc[idd, 'type'] == 'tsma' :
+                    seec[col+'_close'] = seec[col]/close  
                     seec[col] = seec[col].pct_change()     
                 elif value_bb.loc[idd, 'type'] == 'ts':
                     seec[col] = seec[col]/close
-                     
+                    
             for col in key_ll_pro:
                 idd  = col[-1]
                 if value_pro.loc[idd, 'type'] == 'tsma':
+                    seec[col+'_close'] = seec[col]/close  
                     seec[col] = seec[col].pct_change()   
                 elif value_pro.loc[idd, 'type'] == 'ts':
                     seec[col] = seec[col]/close
@@ -637,6 +639,7 @@ def second_select(see,ta_type_dict):
             value = ta_type_dict[key]
             col = key_ll[0]
             if value['type'].values[0] == 'tsma' :
+                seec[col+'_close'] = seec[col]/close  
                 seec[col] = seec[col].pct_change()
                 continue
             elif value['type'].values[0] == 'ts':
@@ -648,12 +651,17 @@ def second_select(see,ta_type_dict):
         for col in key_ll: #如果有多種
             idd  = col[-1]
             if value.loc[idd, 'type'] == 'tsma':
-                seec[col] = seec[col].pct_change()           
+                seec[col+'_close'] = seec[col]/close  
+                seec[col] = seec[col].pct_change()       
             elif value.loc[idd, 'type'] == 'ts':
                 seec[col] = seec[col]/close
+                
     return seec
 
-# aaa = seec[key_ll]
+
+# for col in col_ll :
+#     if key == 'pta_'+col.split('_')[1]:
+#         print(key)
 
 
 # 找那些column是cat_feature
@@ -661,7 +669,7 @@ def third_select(see,ta_type_dict):
     seec =see.iloc[:].copy()
     seec = seec.fillna(method = 'pad', axis = 0)
     seec = seec.dropna()
-    col_ll = seec.columns[5:]
+    col_ll = seec.columns
     
     cat_feature = []
     for key in ta_type_dict.keys():
@@ -685,6 +693,7 @@ def third_select(see,ta_type_dict):
             continue
         
         key_ll = [col for col in col_ll if key == 'pta_'+col.split('_')[1]]
+        key_ll = [col for col in key_ll if   col.split('_')[-1] != 'close']
         if len(key_ll) ==0:continue
         # print(key)
         if len(key_ll) ==1:
