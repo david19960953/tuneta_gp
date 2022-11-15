@@ -19,7 +19,7 @@ from tabulate import tabulate
 from tuneta.config import *
 from tuneta.optimize import Optimize
 from tuneta.utils import col_name, distance_correlation
-
+from tuneta.transTuneTa import *
 
 # Distance correlation
 def dc(p0, p1):
@@ -35,7 +35,22 @@ class TuneTA:
         self.fitted = []
         self.n_jobs = n_jobs
         self.verbose = verbose
-
+        
+        
+        ta_type_dict = trans_ta_type(ta_type)                                                                   
+        ta_type_dict1 = dict()
+        for key, value in ta_type_dict.items():
+            value = value.loc['0', 'type']
+            if type(value) != str: 
+                value = value.iloc[0]
+            ta_type_dict1[key.replace('_','.')] =value
+        ta_type_dict1['pta.squeeze_pro'] = 'ts'
+        ta_type_dict1['pta.td_seq'] = 'station'
+        ta_type_dict1['pta.ttm_trend'] = 'binary'
+        ta_type_dict1['pta.true_range'] = 'ts'
+        ta_type_dict1['pta.vp'] = 'ts'
+        self.ta_type_dict1 = ta_type_dict1
+        
     def fit(
         self,
         X,
@@ -100,7 +115,10 @@ class TuneTA:
 
             # Iterate indicators per range
             for ind in indicators:
-
+                
+                #weather should normalize
+                ta_type = self.ta_type_dict1[ind]
+                
                 # Index column to optimize if indicator returns dataframe
                 idx = 0
                 if ":" in ind:
@@ -159,6 +177,24 @@ class TuneTA:
                     fn += "lookahead=False, "
                 fn += ")"
 
+                # if suggest == False:
+                #     real_trials = 1
+                # else: real_trials =  trials
+                # optimize = Optimize(function=fn, n_trials=real_trials,
+                #               remove_consecutive_duplicates=remove_consecutive_duplicates,
+                #               ta_type = ta_type,
+                #               n_jobs = self.n_jobs
+                #                   ).fit(
+                #                 X,
+                #                 y,
+                #                 idx=idx,
+                #                 max_clusters=max_clusters,
+                #                 verbose=self.verbose,
+                #                 early_stop=early_stop,
+                #                   )
+
+                # self.fitted.append(optimize)
+
                 # Only optimize indicators that contain tunable parameters
                 if suggest:
                     self.fitted.append(
@@ -167,6 +203,7 @@ class TuneTA:
                                 function=fn,
                                 n_trials=trials,
                                 remove_consecutive_duplicates=remove_consecutive_duplicates,
+                                ta_type = ta_type
                             ).fit,
                             X,
                             y,
@@ -183,6 +220,7 @@ class TuneTA:
                                 function=fn,
                                 n_trials=1,
                                 remove_consecutive_duplicates=remove_consecutive_duplicates,
+                                ta_type = ta_type
                             ).fit,
                             X,
                             y,

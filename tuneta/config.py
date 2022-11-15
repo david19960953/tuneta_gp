@@ -272,7 +272,7 @@ pandas_ta_indicators = [
     "pta.stoch",
     # "pta.stochf", # remove when pandas-ta development is merged
     "pta.stochrsi",
-    "pta.td_seq",
+    # "pta.td_seq", # because of the following error: The value nan is not acceptable.
     "pta.trix",
     "pta.tsi",
     "pta.uo",
@@ -287,7 +287,7 @@ pandas_ta_indicators = [
     "pta.hlc3",
     # "pta.hma", # does not accept low ranges
     "pta.hwma",
-    "pta.ichimoku",
+    # "pta.ichimoku", all is na
     "pta.jma",
     "pta.kama",
     "pta.linreg",

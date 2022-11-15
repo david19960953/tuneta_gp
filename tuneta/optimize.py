@@ -120,7 +120,7 @@ def _early_stopping_opt(study, trial):
 
 
 # Apply best trial parameters on multi-index dataframe
-def eval_res(X, function, idx, trial, sym=None):
+def eval_res(X, function, idx, trial, sym=None, ta_type = None):
     if sym:
         level_name = X.index.names[1]
         X = X.droplevel(1)
@@ -131,6 +131,14 @@ def eval_res(X, function, idx, trial, sym=None):
         raise Exception(e)
     if isinstance(res, tuple):
         res = res[idx]
+    
+    #noamalize if necessary
+    if ta_type == 'tsma':
+        res = res/ X.close
+    elif ta_type == 'ts':
+        res = res.pct_change()
+    else:pass    
+    
     res = pd.DataFrame(res, index=X.index)
     if len(res.columns) > 1:
         res = pd.DataFrame(res.iloc[:, idx])
@@ -140,7 +148,7 @@ def eval_res(X, function, idx, trial, sym=None):
     return res
 
 
-def _objective(self, trial, X, y):
+def _objective(self, trial, X, y, ta_type):
     """
     Objective function used in Optuna trials
     :param self:  Optuna study
@@ -154,7 +162,7 @@ def _objective(self, trial, X, y):
     # try:
     if X.index.nlevels == 2:
         res = [
-            eval_res(X, self.function, self.idx, trial, sym=sym)
+            eval_res(X, self.function, self.idx, trial, sym=sym, ta_type = ta_type)
             for sym, X in X.groupby(level=1)
         ]
         res = pd.concat(res, axis=0).sort_index()
@@ -198,11 +206,14 @@ def _objective(self, trial, X, y):
 
 
 class Optimize:
-    def __init__(self, function, n_trials=100, remove_consecutive_duplicates=False):
+    def __init__(self, function, n_trials=100, remove_consecutive_duplicates=False, ta_type = None,
+                 n_jobs = 1):
         self.function = function
         self.n_trials = n_trials
         self.remove_consecutive_duplicates = remove_consecutive_duplicates
-
+        self.ta_type = ta_type
+        self.n_jobs = n_jobs
+        
     def fit(self, X, y, idx=0, max_clusters=10, verbose=False, early_stop=None):
         """
         Optimize a technical indicator
@@ -235,10 +246,10 @@ class Optimize:
         # Start optimization trial
         try:
             self.study.optimize(
-                lambda trial: _objective(self, trial, X, y),
+                lambda trial: _objective(self, trial, X, y, self.ta_type),
                 n_trials=self.n_trials,
                 callbacks=[_early_stopping_opt],
-                n_jobs=1,
+                n_jobs= self.n_jobs,
             )
 
         # Early stopping (not officially supported by Optuna)
