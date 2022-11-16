@@ -179,9 +179,7 @@ class TuneTA:
                 if "pta" in fn:
                     fn += "lookahead=False, "
                 fn += ")"
-                if suggest == False:
-                    ind_ll.append(ind)
-                    print(ind)
+
                 if suggest == False:
                     real_trials = 1
                 else: real_trials =  trials
