@@ -331,7 +331,7 @@ pandas_ta_indicators = [
     "pta.decreasing",
     "pta.dpo",
     "pta.increasing",
-    "pta.psar",
+    # "pta.psar",  # The value nan is not acceptable.
     "pta.qstick",
     # "pta.trendflex", # remove when pandas-ta development is merged
     "pta.ttm_trend",
@@ -343,7 +343,7 @@ pandas_ta_indicators = [
     # "pta.atrts", # remove when pandas-ta development is merged
     "pta.bbands",
     "pta.donchian",
-    "pta.hwc",
+    # "pta.hwc",  # The value nan is not acceptable.
     "pta.kc",
     "pta.massi",
     "pta.natr",

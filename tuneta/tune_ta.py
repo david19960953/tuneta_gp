@@ -141,6 +141,7 @@ class TuneTA:
                 suggest = False
                 for param in params:
                     param = re.split(":|=", str(param))[0].strip()
+                    # print(param)
                     if param == "open_":
                         param = "open"
                     if param == "real":
@@ -153,6 +154,8 @@ class TuneTA:
                         fn += f"X.{param}, "
                     elif param in tune_params:
                         suggest = True
+                        
+                        
                         if param == "mamode":
                             if "pta" in fn and not any(
                                 [
@@ -176,7 +179,9 @@ class TuneTA:
                 if "pta" in fn:
                     fn += "lookahead=False, "
                 fn += ")"
-
+                # if suggest == False:
+                #     ind_ll.append(ind)
+                #     print(ind)
                 # if suggest == False:
                 #     real_trials = 1
                 # else: real_trials =  trials
