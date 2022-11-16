@@ -62,6 +62,7 @@ class TuneTA:
         max_clusters=10,
         min_target_correlation=0.001,
         remove_consecutive_duplicates=False,
+        optuna_njob = False
     ):
         """
         Optimize indicator parameters to maximize correlation
@@ -179,63 +180,65 @@ class TuneTA:
                 if "pta" in fn:
                     fn += "lookahead=False, "
                 fn += ")"
-
-                if suggest == False:
-                    real_trials = 1
-                else: real_trials =  trials
-                optimize = Optimize(function=fn, n_trials=real_trials,
-                              remove_consecutive_duplicates=remove_consecutive_duplicates,
-                              ta_type = ta_type,
-                              n_jobs = self.n_jobs
-                                  ).fit(
+                
+                if optuna_njob == True:
+                    if suggest == False:
+                        real_trials = 1
+                    else: real_trials =  trials
+                    optimize = Optimize(function=fn, n_trials=real_trials,
+                                  remove_consecutive_duplicates=remove_consecutive_duplicates,
+                                  ta_type = ta_type,
+                                  n_jobs = self.n_jobs
+                                      ).fit(
+                                    X,
+                                    y,
+                                    idx=idx,
+                                    max_clusters=max_clusters,
+                                    verbose=self.verbose,
+                                    early_stop=early_stop,
+                                      )
+    
+                    self.fitted.append(optimize)
+                else:
+                # Only optimize indicators that contain tunable parameters
+                    if suggest:
+                        self.fitted.append(
+                            pool.apipe(
+                                Optimize(
+                                    function=fn,
+                                    n_trials=trials,
+                                    remove_consecutive_duplicates=remove_consecutive_duplicates,
+                                    ta_type = ta_type
+                                ).fit,
                                 X,
                                 y,
                                 idx=idx,
                                 max_clusters=max_clusters,
                                 verbose=self.verbose,
                                 early_stop=early_stop,
-                                  )
+                            )
+                        )
+                    else:
+                        self.fitted.append(
+                            pool.apipe(
+                                Optimize(
+                                    function=fn,
+                                    n_trials=1,
+                                    remove_consecutive_duplicates=remove_consecutive_duplicates,
+                                    ta_type = ta_type
+                                ).fit,
+                                X,
+                                y,
+                                idx=idx,
+                                max_clusters=max_clusters,
+                                verbose=self.verbose,
+                                early_stop=early_stop,
+                            )
+                        )
 
-                self.fitted.append(optimize)
-
-                # Only optimize indicators that contain tunable parameters
-        #         if suggest:
-        #             self.fitted.append(
-        #                 pool.apipe(
-        #                     Optimize(
-        #                         function=fn,
-        #                         n_trials=trials,
-        #                         remove_consecutive_duplicates=remove_consecutive_duplicates,
-        #                         ta_type = ta_type
-        #                     ).fit,
-        #                     X,
-        #                     y,
-        #                     idx=idx,
-        #                     max_clusters=max_clusters,
-        #                     verbose=self.verbose,
-        #                     early_stop=early_stop,
-        #                 )
-        #             )
-        #         else:
-        #             self.fitted.append(
-        #                 pool.apipe(
-        #                     Optimize(
-        #                         function=fn,
-        #                         n_trials=1,
-        #                         remove_consecutive_duplicates=remove_consecutive_duplicates,
-        #                         ta_type = ta_type
-        #                     ).fit,
-        #                     X,
-        #                     y,
-        #                     idx=idx,
-        #                     max_clusters=max_clusters,
-        #                     verbose=self.verbose,
-        #                     early_stop=early_stop,
-        #                 )
-        #             )
-
-        # # Blocking wait to retrieve results
-        # self.fitted = [fit.get() for fit in self.fitted]
+        # Blocking wait to retrieve results
+        if optuna_njob == False:
+            self.fitted = [fit.get() for fit in self.fitted]
 
         # Fits must contain best trial data
         self.fitted = [f for f in self.fitted if len(f.study.user_attrs) > 0]
