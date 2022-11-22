@@ -343,10 +343,28 @@ class Optimize:
                 # Clusters of trial parameters for best correlation cluster
                 num_clusters = int(min([max_clusters, len(params) / 2]))
                 if "index" in locals():
-                    ke = KElbowVisualizer(
+                    '''
+                    這裡有時候會報錯
+                     “ValueError: Clustering algorithm could not initialize. 
+                     Consider assigning the initial clusters manually.”
+                     
+                     This is a feature, not a bug. kmodes is telling you that it can’t 
+                     make sense of the data you are presenting it.
+                     At least, not with the parameters you are setting 
+                     the algorithm with. It is up to you, the data scientist, 
+                     to figure out why. Some hints to possible solutions:
+                     
+                     #see https://pypi.org/project/kmodes/
+                    '''
+                    try:
+                        ke = KElbowVisualizer(
                         KPrototypes(random_state=42), k=(1, num_clusters)
-                    )
-                    ke.fit(params, categorical=[index])
+                                        )
+                        ke.fit(params, categorical=[index])
+                    except:
+                        ke =  KElbowVisualizer(KMeans(random_state=42), k=(1, num_clusters))
+                        ke.fit(params)
+                        
                 else:
                     ke = KElbowVisualizer(KMeans(random_state=42), k=(1, num_clusters))
                     ke.fit(params)

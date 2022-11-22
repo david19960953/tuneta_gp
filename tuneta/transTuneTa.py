@@ -659,9 +659,6 @@ def second_select(see,ta_type_dict):
     return seec
 
 
-# for col in col_ll :
-#     if key == 'pta_'+col.split('_')[1]:
-#         print(key)
 
 
 # 找那些column是cat_feature
@@ -833,78 +830,6 @@ tuneta_time = {
   101: {'Indicator': 'pta.wcp', 'Times': 0.5, 'trial1': True},
   102: {'Indicator': 'pta.pdist', 'Times': 0.58, 'trial1': True},
   103: {'Indicator': 'pta.obv', 'Times': 0.62, 'trial1': True}}
-
-
-
-
-
-# opt = Optimize(
-#     function=fn,
-#     n_trials=trials,
-#     remove_consecutive_duplicates=remove_consecutive_duplicates,).fit(X,
-#                             y,
-#                             idx=idx,
-#                             max_clusters=max_clusters,
-#                             verbose=True,
-#                             early_stop=early_stop)
-                                                                      
-                                                                      
-# ta_type_dict = trans_ta_type(ta_type)                                                                   
-# ta_type_dict1 = dict()
-# for key, value in ta_type_dict.items():
-#     value = value.loc['0', 'type']
-#     if type(value) != str: 
-#         value = value.iloc[0]
-#     ta_type_dict1[key] =value
-
-
-# ta_type_dict1 =
-
-# ta = fn.split('(')[0].replace('.','_')
-# ta_type = ta_type_dict1[ta]
-# if ta_type == 'tsma':
-    
-
-
-
-
-# def eval_res(X, function, idx, trial, sym=None, ta_type =None ):
-#     if sym:
-#         level_name = X_.index.names[1]
-#         X_ = X_.droplevel(1)
-#     try:
-#         res = eval(function)
-#     except Exception as e:
-#         print(f"Error:  Function: {function}  Parameters: {trial.params}")
-#         raise Exception(e)
-#     if isinstance(res, tuple):
-#         res = res[idx]
-        
-#     if ta_type == 'tsma':
-#         res = res/ X_.close
-#     elif ta_type == 'ts'
-#         res_ = res.pct_change()
-#     else:pass
-        
-#     res = pd.DataFrame(res, index=X_.index)
-#     if len(res.columns) > 1:
-#         res = pd.DataFrame(res.iloc[:, idx])
-#     if sym:
-#         res[level_name] = sym
-#         res.set_index(level_name, append=True, inplace=True)
-#     return res
-
-
-
-# if X.index.nlevels == 2:
-#     res = [
-#         eval_res(X, function,idx, trial, sym=sym)
-#         for sym, X in X.groupby(level=1)
-#     ]
-#     # res = pd.concat(res, axis=0).sort_index()
-# else:
-#     res = eval_res(X, function, idx, trial)
-
 
 
 
