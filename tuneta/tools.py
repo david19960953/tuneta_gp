@@ -194,7 +194,7 @@ class UseCatBoost():
 # ucb.naive_plot( y_new, need = '3D')
 
     
-if name == 'main':
+if __name__ == '__main__':
 
     # from tuneta.tune_ta import TuneTA
     # transta = pd.read_pickle(r'I:\我的雲端硬碟\colab_高曼_test\saveTransta\transta_2017-06-30.pickle')    
