@@ -82,7 +82,7 @@ class UseCatBoost():
         
         model_cb.fit(self.X_train, self.y_train['lable'], plot=True, 
                     cat_features = self.cat_feature,
-                     verbose = verbose
+                     verbose = verbose,
                     # eval_set=(X_eval, y_eval['lable']), 
                     use_best_model=True)
         return model_cb
