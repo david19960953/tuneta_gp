@@ -75,22 +75,22 @@ class UseCatBoost():
         return X_train, y_train, X_test, y_test
 
 
-    def TrainClassify(self, iterations, random_state):
+    def TrainClassify(self, iterations, random_state, verbose):
         model_cb = CatBoostClassifier(task_type='GPU', iterations= iterations, 
-                              random_state = random_state , depth = 6)
+                              random_state = random_state , depth = 6, verbose = verbose)
         
         
         model_cb.fit(self.X_train, self.y_train['lable'], plot=True, 
                     cat_features = self.cat_feature,
-                    
+                     verbose = verbose
                     # eval_set=(X_eval, y_eval['lable']), 
                     use_best_model=True)
         return model_cb
 
 
-    def get_model(self, raw_X_, iterations = 4000, random_state = 2021):
+    def get_model(self, raw_X_, iterations = 4000, random_state = 2021, verbose = True):
         self.X_train, self.y_train, self.X_test, self.y_test = self.PrepareTraining(raw_X_)
-        self.model_cb = self.TrainClassify(iterations, random_state = random_state)
+        self.model_cb = self.TrainClassify(iterations, random_state = random_state, verbose = verbose)
         
 
 
