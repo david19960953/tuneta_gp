@@ -75,9 +75,9 @@ class UseCatBoost():
         return X_train, y_train, X_test, y_test
 
 
-    def TrainClassify(self, iterations):
+    def TrainClassify(self, iterations, random_state):
         model_cb = CatBoostClassifier(task_type='GPU', iterations= iterations, 
-                              random_state = 2021, depth = 6)
+                              random_state = random_state , depth = 6)
         
         
         model_cb.fit(self.X_train, self.y_train['lable'], plot=True, 
@@ -88,9 +88,9 @@ class UseCatBoost():
         return model_cb
 
 
-    def get_model(self, raw_X_, iterations = 4000):
+    def get_model(self, raw_X_, iterations = 4000, random_state = 2021):
         self.X_train, self.y_train, self.X_test, self.y_test = self.PrepareTraining(raw_X_)
-        self.model_cb = self.TrainClassify(iterations)
+        self.model_cb = self.TrainClassify(iterations, random_state = random_state)
         
 
 
