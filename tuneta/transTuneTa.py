@@ -96,7 +96,7 @@ class trans_multi():
         self.X.columns = self.X.columns.str.lower()  # columns must be lower case
         # pool = ProcessPool(nodes=n_jobs)  # Number of jobs
         result = []
-
+        # func_group = dict()
         # Iterate fitted studies and calculate TA with fitted parameter set
         self.time_df = pd.DataFrame()
         for function_ in self.allFuncDict.values():
@@ -107,6 +107,7 @@ class trans_multi():
                result.append(res)
                end = time.time()
                self.time_df.loc[function_['name'], 'time'] =  end - start
+               # func_group[function_['name']] = [res.columns()]
                # print(function_['name'], "執行時間為 %f 秒" % (end - start))
         # Blocking wait for asynchronous results
         # result = [res.get() for res in result]
@@ -114,7 +115,8 @@ class trans_multi():
         # Combine results into dataframe to return
         res = pd.concat(result, axis=1)
         res = pd.concat([res,self.X.close], axis=1)        
-        return res
+        # self.func_group = func_group
+        return result
     
     
     def main(self,function_):
@@ -214,7 +216,31 @@ class trans_multi():
         return col
 
 
+    def get_func_group(self, columns=None ):
+        """
+        找每一個func的種類
+        """
+        # Remove trailing identifier in column list if present
+        if columns is not None:
+            columns = [re.sub(r"_[0-9]+$", "", s) for s in columns]
 
+        self.X.columns = self.X.columns.str.lower()  # columns must be lower case
+        # pool = ProcessPool(nodes=n_jobs)  # Number of jobs
+        result = []
+        func_group = dict()
+        # Iterate fitted studies and calculate TA with fitted parameter set
+        self.time_df = pd.DataFrame()
+        for function_ in self.allFuncDict.values():
+            # Create field if no columns or is in columns list
+            if columns is None or ind.res_y.name in columns:
+               start = time.time()
+               res = self.main( function_, )
+               # result.append(res)
+               end = time.time()
+               func_group[function_['name'] ]= [res.columns]
+   
+        self.func_group = func_group
+        return self.func_group
 
 
 
