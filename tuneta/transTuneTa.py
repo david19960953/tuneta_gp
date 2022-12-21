@@ -116,7 +116,7 @@ class trans_multi():
         res = pd.concat(result, axis=1)
         res = pd.concat([res,self.X.close], axis=1)        
         # self.func_group = func_group
-        return result
+        return res
     
     
     def main(self,function_):
