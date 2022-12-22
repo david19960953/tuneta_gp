@@ -626,7 +626,7 @@ def first_select(see):
 def second_select(see,ta_type_dict):
     seec =see.iloc[:].copy()
     seec = seec.fillna(method = 'pad', axis = 0)
-    seec = seec.dropna(axis = 1)
+    seec = seec.dropna()
     close = seec['close']
     seec = seec.drop(columns = 'close')
     col_ll = seec.columns
