@@ -128,7 +128,9 @@ def eval_res(X, function, idx, trial, sym=None, ta_type = None):
         res = eval(function)
     except Exception as e:
         print(f"Error:  Function: {function}  Parameters: {trial.params}")
-        raise Exception(e)
+        # res = pd.DataFrame()
+        return None
+        # raise Exception(e)  #這邊有可能是空的，
     if isinstance(res, tuple):
         res = res[idx]
     
