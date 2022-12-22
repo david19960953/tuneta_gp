@@ -36,8 +36,8 @@ class TransTa():
         '''
         fitted = tt.fitted
         self.input_index = fitted[0].study.user_attrs['best_trial'].user_attrs['res_y'].index
-        self.start_time = self.input_index.levels[0][0]
-        self.end_time = self.input_index.levels[0][1]
+        # self.start_time = self.input_index.levels[0][0]
+        # self.end_time = self.input_index.levels[0][1]
         
         
         if self.input_index.nlevels == 2:  # support 2 level inddex (data/symbol)
