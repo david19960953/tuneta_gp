@@ -75,7 +75,10 @@ class UseCatBoost():
         return X_train, y_train, X_test, y_test
 
 
-    def TrainClassify(self, iterations , random_state, task_type , verbose):
+    def TrainClassify(self, iterations , 
+                      random_state , 
+                      task_type ,
+                      verbose):
         model_cb = CatBoostClassifier(iterations = iterations, random_state = random_state, task_type =task_type)
         
         
@@ -89,7 +92,8 @@ class UseCatBoost():
 #  iterations = 4000, random_state = 2021, verbose = True
     def get_model(self, raw_X_,iterations = 10, random_state = 2021, task_type = 'CPU', verbose = True):
         self.X_train, self.y_train, self.X_test, self.y_test = self.PrepareTraining(raw_X_)
-        self.model_cb = self.TrainClassify( iterations = 10, random_state = 2021, task_type = 'CPU', verbose = True )
+        self.model_cb = self.TrainClassify( iterations = iterations, random_state = random_state,
+                                           task_type = task_type, verbose = verbose )
         
 
 
