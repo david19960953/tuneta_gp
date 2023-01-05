@@ -75,22 +75,21 @@ class UseCatBoost():
         return X_train, y_train, X_test, y_test
 
 
-    def TrainClassify(self, iterations, random_state, verbose):
-        model_cb = CatBoostClassifier(task_type='GPU', iterations= iterations, 
-                              random_state = random_state , depth = 6, verbose = verbose)
+    def TrainClassify(self, iterations , random_state, task_type , verbose):
+        model_cb = CatBoostClassifier(iterations = iterations, random_state = random_state, task_type =task_type)
         
         
         model_cb.fit(self.X_train, self.y_train['lable'], plot=True, 
                     cat_features = self.cat_feature,
-                     verbose = verbose,
+                      verbose = verbose,
                     # eval_set=(X_eval, y_eval['lable']), 
                     use_best_model=True)
         return model_cb
 
-
-    def get_model(self, raw_X_, iterations = 4000, random_state = 2021, verbose = True):
+#  iterations = 4000, random_state = 2021, verbose = True
+    def get_model(self, raw_X_,iterations = 10, random_state = 2021, task_type = 'CPU', verbose = True):
         self.X_train, self.y_train, self.X_test, self.y_test = self.PrepareTraining(raw_X_)
-        self.model_cb = self.TrainClassify(iterations, random_state = random_state, verbose = verbose)
+        self.model_cb = self.TrainClassify( iterations = 10, random_state = 2021, task_type = 'CPU', verbose = True )
         
 
 
@@ -224,10 +223,9 @@ if __name__ == '__main__':
         ucb = UseCatBoost( train_start = train_start, train_end = train_end, backtest_end = backtest_end, 
                          target_col  = 'return', q_bins = 10)
         
-        ucb.get_model(raw_X_, iterations = 10)
+        kwargs  = {}
+        ucb.get_model(raw_X_, iterations = 10, random_state = 2021, task_type = 'CPU')
         y_new = ucb.get_predict(test = True)
         ucb.naive_plot( y_new, need = '3D')
-        yNew_dict[train_month] = y_new
+        # yNew_dict[train_month] = y_new
             
-
-
