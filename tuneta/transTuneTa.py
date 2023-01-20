@@ -646,7 +646,8 @@ def second_select(see,ta_type_dict):
                     seec[col+'_close'] = seec[col]/close  
                     seec[col] = seec[col].pct_change()     
                 elif value_bb.loc[idd, 'type'] == 'ts':
-                    seec[col] = seec[col]/close
+                    # seec[col] = seec[col]/close # 打錯，應該是要算變化量
+                    seec[col] = seec[col].pct_change()
                     
             for col in key_ll_pro:
                 idd  = col[-1]
@@ -654,7 +655,8 @@ def second_select(see,ta_type_dict):
                     seec[col+'_close'] = seec[col]/close  
                     seec[col] = seec[col].pct_change()   
                 elif value_pro.loc[idd, 'type'] == 'ts':
-                    seec[col] = seec[col]/close
+                    # seec[col] = seec[col]/close # 打錯，應該是要算變化量
+                    seec[col] = seec[col].pct_change()
                     
             continue
         
@@ -669,7 +671,8 @@ def second_select(see,ta_type_dict):
                 seec[col] = seec[col].pct_change()
                 continue
             elif value['type'].values[0] == 'ts':
-                seec[col] = seec[col]/close
+                # seec[col] = seec[col]/close # 打錯，應該是要算變化量
+                seec[col] = seec[col].pct_change()
                 continue
             else:continue
             
@@ -680,7 +683,8 @@ def second_select(see,ta_type_dict):
                 seec[col+'_close'] = seec[col]/close  
                 seec[col] = seec[col].pct_change()       
             elif value.loc[idd, 'type'] == 'ts':
-                seec[col] = seec[col]/close
+                # seec[col] = seec[col]/close # 打錯，應該是要算變化量
+                seec[col] = seec[col].pct_change()
                 
     return seec
 
