@@ -112,7 +112,7 @@ class UseCatBoost():
         predictive_factor = y_t['return']  #這個只是借用值，沒有用這個跑
         pricing = self.close.loc[predictive_factor.index]
         pricing  = pricing.unstack(level=1)
-        pricing.columns = pricing.columns.levels[1]
+        pricing.columns = pricing.columns.get_level_values(1)
         factor_data = alphalens.utils.get_clean_factor_and_forward_returns(predictive_factor, 
                                           pricing, 
                                           periods=( [1,2,3,4,5]),
